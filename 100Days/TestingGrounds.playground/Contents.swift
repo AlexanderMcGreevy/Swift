@@ -118,3 +118,7 @@ enum Weekday {
 var day = Weekday.monday
 day = .tuesday
 day = .friday
+
+//Manually assign data types
+let surname: String = "Lasso"
+var scored: Int = 0
