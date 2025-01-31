@@ -122,3 +122,76 @@ day = .friday
 //Manually assign data types
 let surname: String = "Lasso"
 var scored: Int = 0
+
+
+var username = "Bob"
+//.count takes too long so .isEmpty is much more efficient due to swift not storing the number of characters
+if username.isEmpty == true {
+    username = "Anonymous"
+} // &&(and) ||(or)
+else if !username.isEmpty && true {
+    print("Hello \(username)!")
+}
+else{
+    print("AHHHHHHHH!!!!!!")
+}
+
+//Much more efficient way of creating an if statement
+enum Weather {
+    case sun, rain, wind, snow, unknown
+}
+let forecast = Weather.sun
+switch forecast {
+case .sun:
+    print("It should be a nice day.")
+case .rain:
+    print("Pack an umbrella.")
+case .wind:
+    print("Wear something warm")
+case .snow:
+    print("School is cancelled.")
+case .unknown:
+    print("Our forecast generator is broken!")
+default: //Ensures that there will alwys be a result
+    print("AHHHHHHHHH!!!!!!!")
+}
+
+//Fallthrrough allows the next case to be executed
+let days = 5
+print("My true love gave to me…")
+
+switch days {
+case 5:
+    print("5 golden rings")
+    fallthrough
+case 4:
+    print("4 calling birds")
+    fallthrough
+case 3:
+    print("3 French hens")
+    fallthrough
+case 2:
+    print("2 turtle doves")
+    fallthrough
+default:
+    print("A partridge in a pear tree")
+}
+
+//Ternary operator returns value for true or false
+//WTF (What ? true : false)
+let age = 18
+let canVote = age >= 18 ? "Yes" : "No"
+print("Vote status: "+canVote)
+
+let names = ["Jayne", "Kaylee", "Mal"]
+let crewCount = names.isEmpty ? "No one" : "\(names.count) people"
+print(crewCount)
+
+enum Theme {
+    case light, dark
+}
+
+let theme = Theme.dark
+
+let background = theme == .dark ? "black" : "white"
+print(background)
