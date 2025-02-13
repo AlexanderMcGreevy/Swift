@@ -64,3 +64,43 @@ class Car: Vehicle {
 
 let teslaX = Car(isElectric: true, isConvertible: false)
 
+
+class User {
+    var username = "Anonymous"
+}
+var user1 = User()
+var user2 = user1//when copying a class the soure is shared so any changes to one are made to the other
+user2.username = "Taylor"
+print(user1.username)
+print(user2.username)
+var user3 = User()//creating a new class instance will not affect other instances
+print(user3.username)
+//////////////////////////////////////////
+///
+///
+class User2 {
+    let id: Int
+
+    init(id: Int) {
+        self.id = id
+        print("User \(id): I'm alive!")
+    }
+
+    deinit {//deinit is called when a class is destroyed
+        print("User \(id): I'm dead!")
+    }
+}
+
+for i in 1...3 {//because this user is created inside a for statement it will be destroyed when the loop ends
+    let user = User2(id: i)
+    print("User \(user.id): I'm in control!")
+}
+
+
+class User3 {
+    var name = "Paul"
+}
+
+let user4 = User3()
+user4.name = "Taylor"
+print(user4.name)
