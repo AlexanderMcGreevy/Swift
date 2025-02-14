@@ -57,3 +57,58 @@ func getTravelEstimates(using vehicles: [Vehicle], distance: Int) {
 }
 
 getTravelEstimates(using: [car, bike], distance: 150)
+
+
+//Opaque Return types
+func getRandomNumber() -> some Equatable {//some Equatable means that the return type will be some type as long as it's equatable(== >= <=)
+    Int.random(in: 1...6)
+}
+
+func getRandomBool() -> some Equatable {
+    Bool.random()
+}
+
+print(getRandomNumber() == getRandomNumber())
+
+
+//Extensions
+extension String {//This extension adds functionality to the string variable that  trimms the whitespace and newlines from a string everytime it is called
+    func trimmed() -> String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)//self is used because we already know that we are in a string
+    }
+}
+var quote = "   The truth is rarely pure and never simple   "
+let trimmed = quote.trimmed()//extensins are much simpler to use
+
+//another example of an extension
+extension String {
+    var lines: [String] {
+        self.components(separatedBy: .newlines)
+    }
+}
+let lyrics = """
+But I keep cruising
+Can't stop, won't stop moving
+It's like I got this music in my mind
+Saying it's gonna be alright
+"""
+
+print(lyrics.lines.count)
+
+//Protocol extensions
+protocol Person {
+    var name: String { get }
+    func sayHello()
+}
+extension Person {//This extension ereses the need for someone to make thir own custom sayHello function
+    func sayHello() {
+        print("Hi, I'm \(name)")
+    }
+}
+
+struct Employee: Person {
+    let name: String
+}
+
+let joe = Employee(name: "Joe Mama")
+joe.sayHello()
