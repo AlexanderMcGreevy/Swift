@@ -65,3 +65,27 @@ let input = ""
 let number2 = Int(input) ?? 0
 print(number2)
 
+
+
+//optional chaining
+let names = ["Arya", "Bran", "Robb", "Sansa"]
+
+let chosen = names.randomElement()?.uppercased() ?? "No one"//returns an optional if nothing found in string ? then returns code for optional ??
+print("Next in line: \(chosen)")
+
+
+
+//functon failure with optionals
+enum UserError: Error {
+    case badID, networkFailed
+}
+
+func getUser(id: Int) throws -> String {
+    throw UserError.networkFailed
+}
+
+if let user = try? getUser(id: 23) {//If getUser doesnot succeed in getting a string it will return nil instead of crashing
+    print("User: \(user)")
+}
+let user = (try? getUser(id: 23)) ?? "Anonymous"//same thing but with nil coalescing
+print(user)
