@@ -112,3 +112,12 @@ struct Employee: Person {
 
 let joe = Employee(name: "Joe Mama")
 joe.sayHello()
+
+extension Numeric {//Numeric protocol allows both ints and doubles to be used in the squared function
+    func squared() -> Self {//Self is used to refer to the type of the value that is calling the function(int for int and double for double)
+        self * self
+    }
+}
+
+var num = 5.5
+print(num.squared())
