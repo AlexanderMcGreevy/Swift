@@ -8,45 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tapCount = 0
-    @State private var name = ""
-    let students = ["Harry", "Hermione", "Ron"]
-    @State private var selectedStudent = "Harry"
+    @State private var checkAmount = 0.0
+    @State private var numberOfPeople = 2
+    @State private var tipPercentage = 20
+    let tipPercentages = [10, 15, 20, 25, 0]
     
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-        NavigationStack {
-                Form {
-                    Section {
-                        Text("Hello, world!")
-                        
-                        Button("Tap Count: \(tapCount)") {
-                            self.tapCount += 1
-                                }
-                        TextField("Enter your name", text: $name)//$ means 2 way binding(When I change the var, it is immediately written in textbox below)
-                        Form {
-                            Picker("Select your student", selection: $selectedStudent) {
-                                ForEach(students, id: \.self) {
-                                    Text($0)
-                                }
-                            }
-                        }
+        Form {
+            Section {
+                TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    .keyboardType(.decimalPad)
+
+                Picker("Number of people", selection: $numberOfPeople) {
+                    ForEach(2..<100) {
+                        Text("\($0) people")
                     }
-                    Text("Your name is \(name)")//name is only read, not written(no $)
-                    
-                }
-            .navigationTitle("SwiftUI")
-            .navigationBarTitleDisplayMode(.inline)
+                }.pickerStyle(.navigationLink)
             }
-    
+
+          
+        }
     }
-    
 }
 
 #Preview {
