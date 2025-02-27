@@ -15,6 +15,8 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var score = 0
     @State private var flagPressed = 0
+//Saves High score
+    @AppStorage("highScore") var highScore = 0
 
     
     var body: some View {
@@ -26,7 +28,11 @@ struct ContentView: View {
                     Text("Guess the Flag")
                         .font(.largeTitle.weight(.bold))
                         .foregroundStyle(.white)
-                        .padding()
+                    Text("High Score: \(highScore)")
+                        .foregroundStyle(.white)
+                        .font(.headline.bold())
+                        
+                    
                           
 
                     VStack(spacing: 25) {
@@ -81,6 +87,10 @@ struct ContentView: View {
             let impact = UIImpactFeedbackGenerator(style: .rigid)
                 impact.impactOccurred()
             showingScore = true
+            if score > highScore {
+                highScore = score}
+            score = 0
+            
         }
     }
     func askQuestion() {
