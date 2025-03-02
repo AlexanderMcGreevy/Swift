@@ -6,30 +6,36 @@
 //
 
 import SwiftUI
-
 struct ContentView: View {
-    @State private var useRedText = false
-    
     var body: some View {
-        Button("Hello World") {
-            // flip the Boolean between true and false
-            useRedText.toggle()
+        GridStack(rows: 4, columns: 4) { row, col in
+            Text("R\(row) C\(col)")
         }
-        .foregroundStyle(useRedText ? .red : .blue)
-        .padding()
-        .background(useRedText ? .blue : .red)
-        
-        VStack {
-            Text("Gryffindor").font(.largeTitle).blur(radius: 0)
-            Text("Hufflepuff")
-            Text("Ravenclaw")
-            Text("Slytherin")
+        GridStack(rows: 4, columns: 4) { row, col in
+            Image(systemName: "\(row * 4 + col).circle")
+            Text("R\(row) C\(col)")
         }
-        .font(.title).blur(radius: 5)
     }
-    
 }
 
+struct GridStack<Content: View>: View {
+    let rows: Int
+    let columns: Int
+    @ViewBuilder let content: (Int, Int) -> Content
+
+    
+    var body: some View {
+        VStack {
+            ForEach(0..<rows, id: \.self) { row in
+                HStack {
+                    ForEach(0..<columns, id: \.self) { column in
+                        content(row, column)
+                    }
+                }
+            }
+        }
+    }
+}
 #Preview {
     ContentView()
 }

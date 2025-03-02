@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     //Var space
-    @State var countries = ["Bhutan", "Brazil", "Cambodia", "Cuba", "Estonia", "France", "Germany", "Ireland", "Italy", "Jamaica", "Japan", "Kazakhstan", "Mexico", "Monaco", "Nigeria", "Poland", "The Soviet Union", "Spain", "Sri Lanka", "UK", "Ukraine", "US", "Vietnam", "Wales"].shuffled()
+    @State var countries = ["Bhutan", "Brazil", "Cambodia", "Cuba", "Estonia", "France", "Germany", "Ireland", "Italy", "Jamaica", "Japan", "Kazakhstan", "Mexico", "Monaco", "Nigeria", "Poland", "Soviet Union", "Spain", "Sri Lanka", "UK", "Ukraine", "US", "Vietnam", "Wales"].shuffled()
 
     @State var correctAnswer = Int.random(in: 0...2)
     @State private var showingScore = false
@@ -37,8 +37,10 @@ struct ContentView: View {
                     .foregroundStyle(.white)
                     .font(.headline.bold())
                 Text("Time Remaining: \(time)")
-                    .foregroundStyle(.white)
+                    .foregroundStyle((time<=30)&&(time%2==0) ? .red : .white)
+                    
                     .font(.headline.bold())
+                
                 
                 
                 
@@ -58,17 +60,7 @@ struct ContentView: View {
                             flagTapped(number)
                             flagPressed=number
                         } label: {
-                            Image(countries[number])
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 200, height: 100)
-                                .opacity(1)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .shadow(color: .black, radius: 6)
-                                .scaleEffect(flagPressed == number ? 1.1 : 1.0)
-                                .animation(.spring(), value: flagPressed)
-
-
+                            FlagImage(countries: countries, number: number, flagPressed: flagPressed)
                             
                         }
                     }
@@ -145,7 +137,23 @@ struct ContentView: View {
         }
     }
 }
+struct FlagImage: View {
+    let countries: [String]
+    let number: Int
+    let flagPressed: Int
 
+    var body: some View {
+        Image(countries[number])
+            .resizable()
+            .scaledToFit()
+            .frame(width: 200, height: 100)
+            .opacity(1)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black, radius: 6)
+            .scaleEffect(flagPressed == number ? 1.1 : 1.0)
+            .animation(.spring(), value: flagPressed)
+    }
+}
         
     
 

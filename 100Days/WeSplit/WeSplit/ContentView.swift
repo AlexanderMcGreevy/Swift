@@ -57,7 +57,7 @@ struct ContentView: View {
                         Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     }
                 Section("Total Amount"){
-                    Text(totalAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    Text(totalAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD")).foregroundStyle(tipPercentage==0 ? .red : .primary)
                 }
                     
                 }.navigationTitle("WeSplit")
