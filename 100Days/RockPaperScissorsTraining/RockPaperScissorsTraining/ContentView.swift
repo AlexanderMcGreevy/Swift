@@ -5,7 +5,7 @@ struct ContentView: View {
     @State private var handPressed = 0
     @State private var correctHand = 0
     @State private var score = 0
-    @State private var highScore = 0
+    @AppStorage("highScore") var highScore = 0
     @State private var showingScore = false
     @State private var time = 60
     @State private var timer: Timer?
@@ -14,24 +14,35 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var current = ""
     @State private var correct = ""
+    @State private var visible = false
+    @State private var avgTime = 0.0
+    @AppStorage("bestAvgTime") var bestAvgTime = 0.0
     
     
     
     var body: some View {
         
         ZStack {
+            EllipticalGradient(
+                    gradient: Gradient(colors: [.blue, .orange, .blue, .orange, .blue, .orange, .blue, .orange, .blue, .orange, .blue, .orange, .blue, .orange]),
+                    center: .center,
+                    startRadiusFraction: 0.1,
+                    endRadiusFraction: 1.0)
+            .ignoresSafeArea()
             VStack{
                 
                 Text("Rock, Paper, Scissors")
-                    .font(.title)
-                Text("High Score: \(highScore)")
-                Text("Time: \(time)")
+                    .font(.title).bold()
                     .padding()
+                Text("High Score: \(highScore)").bold()
+                Text("Time: \(time)").bold()
+                Text("Best Avg. Reaction Speed: \(bestAvgTime)s").bold()
+
                 Image(current)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 100, height: 100)
-                    .opacity(1)
+                    .opacity(visible ? 1 : 0)
                 Text(condition ? "Beat" : "Lose")
                     .foregroundColor(condition ? .green : .red)
                     .font(.title.bold())
@@ -44,6 +55,7 @@ struct ContentView: View {
                         Button {
                             handTapped(number)
                             handPressed=number
+                            calcAvgTime()
                           
                         } label: {
                             HandsView(hands: hands, number: number, handPressed: handPressed)
@@ -54,12 +66,15 @@ struct ContentView: View {
                 }
                 .padding()
                 Text("Score: \(score)")
+                Text("Avg. Reaction Speed: \(avgTime)s")
                 Button("Start") {
                     score=0
                     genHand()
                     startCountdown()
                     time=60
-                }.background(Color.red)
+                    visible=true
+                }.background(Color.red).bold()
+                    .padding()
                 
             }
             
@@ -77,15 +92,19 @@ struct ContentView: View {
         let lose = ["Rock": "Paper", "Paper": "Scissors", "Scissors": "Rock"]
         
         if condition{
-            correct = win[current]!
-        } else {
             correct = lose[current]!
+        } else {
+            correct = win[current]!
         }
         
         
     }
     
-
+    func calcAvgTime() {
+        avgTime = (60.0-Double(time))/Double(score)
+        if avgTime > bestAvgTime {
+            bestAvgTime = avgTime}
+    }
     
     func startCountdown() {
         timer?.invalidate()
@@ -124,7 +143,9 @@ struct ContentView: View {
             showingScore = true
             if score > highScore {
                 highScore = score}
-            score = 0
+            visible=false
+
+            
         }
         
     }
