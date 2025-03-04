@@ -96,6 +96,7 @@ struct ContentView: View {
         } else {
             correct = win[current]!
         }
+        hands=hands.shuffled()
         
         
     }
