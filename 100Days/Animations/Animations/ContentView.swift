@@ -8,24 +8,46 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var animationAmount = 1.0
+    @State private var isShowingRed = false
 
     var body: some View {
-        VStack {
-            Button("Tap Me") {
-                animationAmount += 1
+        ZStack {
+            Rectangle()
+                .fill(.blue)
+                .frame(width: 200, height: 200)
+
+            if isShowingRed {
+                Rectangle()
+                    .fill(.red)
+                    .frame(width: 200, height: 200)
+                    .transition(.pivot)
             }
-            .padding(50)
-            .background(.red)
-            .foregroundStyle(.white)
-            .clipShape(.circle)
-            .scaleEffect(animationAmount)
-            .blur(radius: (animationAmount - 1) * 3)
-            .animation(.default, value: animationAmount)
-
-
         }
-        
+        .onTapGesture {
+            withAnimation {
+                isShowingRed.toggle()
+            }
+        }
+    }
+}
+
+extension AnyTransition {
+    static var pivot: AnyTransition {
+        .modifier(
+            active: CornerRotateModifier(amount: -90, anchor: .topLeading),
+            identity: CornerRotateModifier(amount: 0, anchor: .topLeading)
+        )
+    }
+}
+
+struct CornerRotateModifier: ViewModifier {
+    let amount: Double
+    let anchor: UnitPoint
+
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(.degrees(amount), anchor: anchor)
+            .clipped()
     }
 }
 
