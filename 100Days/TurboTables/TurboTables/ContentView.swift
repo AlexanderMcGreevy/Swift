@@ -79,7 +79,7 @@ struct ContentView: View {
     }
     func checkAns(){
         for i in questions.indices{
-            if Int(guessed[i]) == Int(answers[i]) {
+            if Int(guessed[i]) == answers[i] {
                 score+=1
             }
         }
