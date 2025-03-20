@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var answer = 0
-    @State private var guessed = 0
+    @State private var answers = []
+    @State private var guessed = ""
     @State private var display = ""
     @State private var num1 = 0
-    @State private var num2 = 0
     @State private var score = 0
     @State private var table = ""
     @State private var highScore = 0
@@ -30,11 +29,17 @@ struct ContentView: View {
                     if gameOver {
                         Text("Score: \(score)")
                             .font(.title)
+                        List(0..<questions.count) { i in
+                            Text("\(questions[i])")
+                            TextField("Enter your answer", text: $display)
+                                .padding()
+                                .keyboardType(.numberPad)
+                        }
 
-                        Text("What is \(num1) x \(num2)?")
+                        Text("What is \(num1) x \(display)?")
                             .font(.title)
                             .padding()
-                        TextField("Enter your answer", text: $display)
+                        TextField("Enter your answer", text: $guessed)
                             .padding()
                             .keyboardType(.numberPad)
                         Button("Submit") {
@@ -51,6 +56,7 @@ struct ContentView: View {
                         
         
                         Button("New Game") {
+                            genTables()
                             gameOver.toggle()
                         }
                     }
@@ -61,8 +67,16 @@ struct ContentView: View {
         }
         
     }
-    func selectTable() {
-        num2 = Int.random(in: 1...12)
+    func genTables() {
+        num1=Int(table)!
+        if table=="0"{
+            num1 = Int.random(in: 1...12)
+        }
+        for i in 1...12 {
+            questions.append("\(num1) x \(i)")
+            answers.append(i * num1)
+
+        }
         
     }
 }
