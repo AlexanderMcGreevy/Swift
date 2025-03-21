@@ -8,15 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var answers = []
-    @State private var guessed = [String]
+    @State private var answers: [Int] = []
+    @State private var guessed = ""
+    @State private var questions: [String] = []
     @State private var num1 = 0
     @State private var score = 0
     @State private var table = ""
     @State private var highScore = 0
-    @State private var questions = []
     @State private var gameOver = false
     @State private var difficulty = 12
+    @State private var questionOrder: [Int] = []
+    @State private var currentquestion = 0
+    
     
     
     
@@ -26,20 +29,23 @@ struct ContentView: View {
             Color.cyan.edgesIgnoringSafeArea(.all)
             VStack {
                 Text("Turbo Tables")
-                    .font(.largeTitle).bold().padding().padding().background(Color.red).cornerRadius(10)
+                    .font(.largeTitle).bold().padding().padding().background(Color.red).cornerRadius(10).padding()
                 VStack{
                     if gameOver && difficulty>1 {
                         
                         Text("Score: \(score)")
                             .font(.title)
-                        List{
-                            ForEach(questions.indices.shuffled(), id: \.self) { i in
-                                
-                                Text("\(questions[i])")
-                                TextField("Enter your answer", text: $guessed)
-                                    .padding()
-                                    .keyboardType(.numberPad)
-                            }
+                        
+                        
+                        Text("\(questions[questionOrder[currentquestion]])")
+                            .font(.title)
+                            .padding()
+                        TextField("Enter your answer", text: $guessed)
+                            .padding()
+                            .keyboardType(.numberPad)
+                        Button("Submit") {
+                            checkAns()
+                            
                         }
                         
                         
@@ -55,34 +61,53 @@ struct ContentView: View {
                     }
                     
                     
-                    Button("New Game") {
-                        genTables()
-                        gameOver.toggle()
+                    
+                }.padding().background(Color.white).cornerRadius(10).padding().animation(.easeIn, value: gameOver)
+                Button("New Game") {
+                    genTables()
+                    gameOver.toggle()
+                    for i in 0..<difficulty {
+                        questionOrder.append(i)
+                        questionOrder.shuffle()
                     }
-                }.background(Color.white).cornerRadius(10).padding().animation(.easeIn, value: gameOver)
+                }.padding().background(Color.white).cornerRadius(10).padding()
             }
             
         }
         
     }
     func genTables() {
-        num1=Int(table)!
-        if table=="0"{
+        questions.removeAll()
+        answers.removeAll()
+        guessed.removeAll()
+        
+        
+        if table=="0" || table=="" {
             num1 = Int.random(in: 1...difficulty)
         }
         for i in 1...12 {
+            num1=Int(table)!
             questions.append("\(num1) x \(i)")
             answers.append(i * num1)
             
         }
         
     }
-    func checkAns(){
-        for i in questions.indices{
-            if Int(guessed[i]) == answers[i] {
-                score+=1
-            }
+    func checkAns() {
+        if guessed==String(answers[currentquestion]) {
+            score+=1
         }
+        if score>highScore {
+            highScore=score
+        }
+        currentquestion+=1
+        if currentquestion==difficulty {
+            gameOver.toggle()
+            score=0
+            currentquestion=0
+            table = ""
+        }
+        
     }
 }
 
