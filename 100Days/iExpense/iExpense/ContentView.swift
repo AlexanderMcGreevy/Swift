@@ -6,23 +6,36 @@
 //
 
 import SwiftUI
+import Observation
+
 
 struct ContentView: View {
+    @State private var showingSheet = false
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Button("Show Sheet") {
+            showingSheet.toggle()
+        }.sheet(isPresented: $showingSheet) {
+            SecondView(name: "@twostraws")
         }
-        .padding()
+
     }
 }
-struct User {
-    var firstName = "Bilbo"
-    var lastName = "Baggins"
+struct SecondView: View {
+    @Environment(\.dismiss) var dismiss
+
+    let name: String
+
+       var body: some View {
+           Text("Hello, \(name)!")
+           Button("Dismiss") {
+               dismiss()
+           }
+       }
 }
+
 
 #Preview {
     ContentView()
 }
+
