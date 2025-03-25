@@ -10,30 +10,41 @@ import Observation
 
 
 struct ContentView: View {
-    @State private var showingSheet = false
+    @State private var expenses = Expenses()
 
     var body: some View {
-        Button("Show Sheet") {
-            showingSheet.toggle()
-        }.sheet(isPresented: $showingSheet) {
-            SecondView(name: "@twostraws")
+        NavigationStack {
+            List {
+                ForEach(expenses.items) { item in
+                    Text(item.name)
+                }
+                .onDelete(perform: removeItems)
+            }.toolbar {
+                Button("Add Expense", systemImage: "plus") {
+                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
+                    expenses.items.append(expense)
+                }
+            }
+            .navigationTitle("iExpense")
         }
 
     }
+    func removeItems(at offsets: IndexSet) {
+        expenses.items.remove(atOffsets: offsets)
+    }
+    
 }
-struct SecondView: View {
-    @Environment(\.dismiss) var dismiss
+@Observable
+class Expenses {
+    var items = [ExpenseItem]()
+}
 
+struct ExpenseItem: Identifiable {
+    let id = UUID()//Univeersal unique ID
     let name: String
-
-       var body: some View {
-           Text("Hello, \(name)!")
-           Button("Dismiss") {
-               dismiss()
-           }
-       }
+    let type: String
+    let amount: Double
 }
-
 
 #Preview {
     ContentView()
