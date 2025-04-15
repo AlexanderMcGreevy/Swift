@@ -23,22 +23,26 @@ struct ContentView: View {
                         .shadow(radius: 3)
                     
                     List {
-                        ForEach(habitList.habits) { habit in
-                            HStack{
-                                Text(habit.name)
+                        ForEach(Array(habitList.habits.enumerated()), id: \.element.id) { index, habit in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(habit.name)
+                                        .font(.headline)
+                                    Text(habit.description)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                    Text("Completed: \(habit.count) times")
+                                        .font(.caption)
+                                }
+                                Spacer()
                                 Button {
-                                   // count += 1
+                                    habitList.habits[index].count += 1
                                 } label: {
                                     Label("Complete", systemImage: "checkmark.circle")
                                 }
-                                .buttonStyle(.borderedProminent).foregroundColor(.white)
-
+                                .buttonStyle(.borderedProminent)
                             }
-                                .font(.headline)
-                                .foregroundColor(.black)
-                                .padding()
-                                .cornerRadius(10)
-                            
+                            .padding()
                         }
                     }.padding().cornerRadius(10).opacity(0.8)
                 }
@@ -65,8 +69,10 @@ struct ContentView: View {
 struct Habit: Identifiable, Codable {
     var id = UUID()
     var name: String
-    var date: Date
+    var description: String
+    var count: Int = 0
 }
+
 
 // Observable class that holds multiple activities
 class HabitList: ObservableObject {

@@ -32,7 +32,8 @@ struct ActivityAdd: View {
                     .padding(.horizontal)
                 
                 Button("Add Activity") {
-                    let newHabit = Habit(name: activity, date: Date())
+                    let newHabit = Habit(name: activity, description: description, count: 0)
+
                     habitList.habits.append(newHabit)
                 }
                 .padding()
