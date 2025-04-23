@@ -10,6 +10,7 @@ struct AddressView: View {
     @Bindable var order: Order
 
     var body: some View {
+        
         Form {
             Section {
                 TextField("Name", text: $order.name)
@@ -22,7 +23,7 @@ struct AddressView: View {
                 NavigationLink("Check out") {
                     CheckoutView(order: order)
                 }
-            }.disabled(order.hasValidAddress == false)
+            }.disabled(order.hasValidAddress == false )
 
         }
         .navigationTitle("Delivery details")
