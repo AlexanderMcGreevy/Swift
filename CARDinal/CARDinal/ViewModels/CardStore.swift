@@ -1,63 +1,95 @@
+//
 //  CardStore.swift
 //  CARDinal
 //
-//  Holds user's card and received cards. Provides encode/decode for QR sharing.
+//  Data store for managing business cards.
 //
-//  Created by AI Assistant on 9/30/25.
+//  Created by Alexander McGreevy on 9/30/25.
+//
 
-import Foundation
 import SwiftUI
+import Foundation
 import Combine
 
 @MainActor
-final class CardStore: ObservableObject {
+class CardStore: ObservableObject {
     @Published var myCard: BusinessCard
-    @Published var received: [BusinessCard] = []
-
-    private let myCardKey = "myCard.json"
-    private let receivedKey = "received.json"
-
+    @Published var receivedCards: [BusinessCard] = []
+    
+    // Computed property alias for backward compatibility
+    var received: [BusinessCard] {
+        return receivedCards
+    }
+    
+    private let myCardKey = "MyBusinessCard"
+    private let receivedCardsKey = "ReceivedBusinessCards"
+    
     init() {
-        if let saved: BusinessCard = Self.load(myCardKey) {
-            myCard = saved
+        // Load my card from UserDefaults
+        if let data = UserDefaults.standard.data(forKey: myCardKey),
+           let card = try? JSONDecoder().decode(BusinessCard.self, from: data) {
+            self.myCard = card
         } else {
-            myCard = BusinessCard(fullName: "Your Name", company: "Company", role: "Role", website: nil, instagram: nil, linkedIn: nil, phone: nil, email: nil, accentColor: .cyan)
+            // Create default card
+            self.myCard = BusinessCard(
+                fullName: "Your Name",
+                jobTitle: "Your Title",
+                company: "Your Company",
+                email: "your.email@example.com",
+                phone: "+1 (555) 123-4567",
+                website: URL(string: "https://www.yourwebsite.com"),
+                resumeURL: "https://yourresume.com"
+            )
         }
-        if let saved: [BusinessCard] = Self.load(receivedKey) { received = saved }
-    }
-
-    func updateMyCard(_ update: (inout BusinessCard) -> Void) {
-        update(&myCard)
-        persist()
-    }
-
-    func addReceived(from qrString: String) throws {
-        let data = Data(qrString.utf8)
-        let decoded = try JSONDecoder().decode(BusinessCard.self, from: data)
-        guard decoded.id != myCard.id else { return } // ignore own
-        if !received.contains(decoded) {
-            received.insert(decoded, at: 0)
-            persist()
+        
+        // Load received cards from UserDefaults
+        if let data = UserDefaults.standard.data(forKey: receivedCardsKey),
+           let cards = try? JSONDecoder().decode([BusinessCard].self, from: data) {
+            self.receivedCards = cards
         }
     }
-
-    func qrPayload() throws -> String {
-        let data = try JSONEncoder().encode(myCard)
-        return String(decoding: data, as: UTF8.self)
+    
+    func saveMyCard() {
+        if let data = try? JSONEncoder().encode(myCard) {
+            UserDefaults.standard.set(data, forKey: myCardKey)
+        }
     }
-
-    private func persist() {
-        Self.save(myCard, key: myCardKey)
-        Self.save(received, key: receivedKey)
+    
+    func saveReceivedCards() {
+        if let data = try? JSONEncoder().encode(receivedCards) {
+            UserDefaults.standard.set(data, forKey: receivedCardsKey)
+        }
     }
-}
-
-private extension CardStore {
-    static func save<T: Encodable>(_ value: T, key: String) {
-        do { let data = try JSONEncoder().encode(value); UserDefaults.standard.set(data, forKey: key) } catch { print("Save error: \(error)") }
+    
+    func addReceivedCard(_ card: BusinessCard) {
+        receivedCards.append(card)
+        saveReceivedCards()
     }
-    static func load<T: Decodable>(_ key: String) -> T? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(T.self, from: data)
+    
+    // Method alias for backward compatibility
+    func addReceived(from payload: String) throws {
+        guard let data = payload.data(using: .utf8),
+              let card = try? JSONDecoder().decode(BusinessCard.self, from: data) else {
+            throw NSError(domain: "CardStore", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid card data"])
+        }
+        addReceivedCard(card)
+    }
+    
+    func deleteReceivedCard(_ card: BusinessCard) {
+        receivedCards.removeAll { $0.id == card.id }
+        saveReceivedCards()
+    }
+    
+    func updateMyCard(_ card: BusinessCard) {
+        myCard = card
+        saveMyCard()
+    }
+    
+    // Overloaded method that accepts a closure for EditCardView compatibility
+    func updateMyCard(_ updateBlock: (inout BusinessCard) -> Void) {
+        var updatedCard = myCard
+        updateBlock(&updatedCard)
+        myCard = updatedCard
+        saveMyCard()
     }
 }

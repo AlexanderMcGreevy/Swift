@@ -51,7 +51,7 @@ struct MyCardView: View {
             }
         }
         .sheet(isPresented: $showEdit) { EditCardView().environmentObject(store) }
-        .sheet(isPresented: $showQR) { QRCodeShareView().environmentObject(store) }
+        .sheet(isPresented: $showQR) { QRCodeShareView(card: store.myCard) }
         .background(BackgroundGradient())
         .navigationTitle("My Card")
     }

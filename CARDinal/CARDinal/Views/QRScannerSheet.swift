@@ -106,14 +106,27 @@ private struct ScannerViewRepresentable: UIViewControllerRepresentable {
             configureSession()
         }
 
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+            if session.isRunning {
+                session.stopRunning()
+            }
+        }
+
         private func configureSession() {
             guard let device = AVCaptureDevice.default(for: .video),
                   let input = try? AVCaptureDeviceInput(device: device),
-                  session.canAddInput(input) else { onResult(.failure(QRScannerSheet.ScanError.failed)); return }
+                  session.canAddInput(input) else { 
+                onResult(.failure(QRScannerSheet.ScanError.failed))
+                return 
+            }
             session.addInput(input)
 
             let output = AVCaptureMetadataOutput()
-            guard session.canAddOutput(output) else { onResult(.failure(QRScannerSheet.ScanError.failed)); return }
+            guard session.canAddOutput(output) else { 
+                onResult(.failure(QRScannerSheet.ScanError.failed))
+                return 
+            }
             session.addOutput(output)
             output.setMetadataObjectsDelegate(self, queue: .main)
             output.metadataObjectTypes = [.qr]
@@ -123,13 +136,24 @@ private struct ScannerViewRepresentable: UIViewControllerRepresentable {
             previewLayer.frame = view.bounds
             view.layer.addSublayer(previewLayer)
 
-            session.startRunning()
+            DispatchQueue.global(qos: .background).async { [weak self] in
+                self?.session.startRunning()
+            }
         }
 
         func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-            guard !didFinish, let obj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, obj.type == .qr, let value = obj.stringValue else { return }
+            guard !didFinish, 
+                  let obj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, 
+                  obj.type == .qr, 
+                  let value = obj.stringValue else { return }
+            
             didFinish = true
             session.stopRunning()
+            
+            // Haptic feedback for successful scan
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+            
             onResult(.success(value))
         }
 

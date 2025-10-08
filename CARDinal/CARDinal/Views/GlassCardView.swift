@@ -6,7 +6,6 @@
 //  Created by AI Assistant on 9/30/25.
 
 import SwiftUI
-import CoreImage.CIFilterBuiltins
 
 struct GlassCardView: View {
     let card: BusinessCard
@@ -20,6 +19,11 @@ struct GlassCardView: View {
                     .fontWeight(.semibold)
                     .lineLimit(1)
                 Spacer()
+                if card.hasResume {
+                    Image(systemName: "doc.fill")
+                        .foregroundStyle(card.accentColor)
+                        .font(.caption)
+                }
             }
             Text(card.role)
                 .font(.subheadline)
@@ -34,7 +38,7 @@ struct GlassCardView: View {
             if !compact { socials }
         }
         .padding(18)
-        .background(GlassBackground(tint: card.accentColor))
+        .background(MaterialBackground(material: card.material, tint: card.accentColor))
         .overlay(RoundedRectangle(cornerRadius: 24).stroke(card.accentColor.opacity(0.35), lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .shadow(color: card.accentColor.opacity(0.25), radius: 20, y: 8)
@@ -43,76 +47,83 @@ struct GlassCardView: View {
 
     private var infoRows: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if let phone = card.phone, !phone.isEmpty {
-                Label(phone, systemImage: "phone")
-                    .labelStyle(.iconOnlyIfCompact(compact))
+            if !card.phone.isEmpty {
+                HStack {
+                    Image(systemName: "phone.fill")
+                        .foregroundStyle(card.accentColor)
+                        .frame(width: 12)
+                    Text(card.phone)
+                        .font(.caption)
+                }
             }
-            if let email = card.email, !email.isEmpty {
-                Label(email, systemImage: "envelope")
-                    .labelStyle(.iconOnlyIfCompact(compact))
+            
+            if !card.email.isEmpty {
+                HStack {
+                    Image(systemName: "envelope.fill")
+                        .foregroundStyle(card.accentColor)
+                        .frame(width: 12)
+                    Text(card.email)
+                        .font(.caption)
+                }
             }
-            if let website = card.website?.absoluteString, !website.isEmpty {
-                Label(website.replacingOccurrences(of: "https://", with: ""), systemImage: "globe")
-                    .labelStyle(.iconOnlyIfCompact(compact))
+            
+            if let website = card.website {
+                HStack {
+                    Image(systemName: "globe")
+                        .foregroundStyle(card.accentColor)
+                        .frame(width: 12)
+                    Text(website.absoluteString)
+                        .font(.caption)
+                }
             }
         }
-        .font(.caption)
-        .foregroundStyle(.primary)
     }
-
+    
     private var socials: some View {
-        HStack(spacing: 14) {
-            if let ig = card.instagram, !ig.isEmpty {
-                SocialChip(icon: "camera", text: "@" + ig)
+        HStack(spacing: 12) {
+            if !card.linkedIn.isEmpty {
+                Image(systemName: "person.crop.rectangle")
+                    .foregroundStyle(card.accentColor)
             }
-            if let li = card.linkedIn, !li.isEmpty {
-                SocialChip(icon: "link", text: li)
+            if !card.twitter.isEmpty {
+                Image(systemName: "at")
+                    .foregroundStyle(card.accentColor)
             }
-        }.padding(.top, 4)
-    }
-}
-
-private struct SocialChip: View {
-    var icon: String
-    var text: String
-    var body: some View {
-        HStack(spacing: 4){
-            Image(systemName: icon).font(.caption2)
-            Text(text).font(.caption2)
-        }
-        .padding(.vertical, 4).padding(.horizontal, 8)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(.white.opacity(0.2)))
-    }
-}
-
-private struct GlassBackground: View {
-    var tint: Color
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(.linearGradient(colors: [tint.opacity(0.35), tint.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing))
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(.ultraThinMaterial)
-            Circle().fill(tint.opacity(0.25)).blur(radius: 40).offset(x: -80, y: -70)
-            Circle().fill(tint.opacity(0.20)).blur(radius: 50).offset(x: 120, y: 80)
+            if !card.instagram.isEmpty {
+                Image(systemName: "camera")
+                    .foregroundStyle(card.accentColor)
+            }
+            Spacer()
         }
     }
 }
 
-private struct IconOnlyIfCompactLabelStyle: LabelStyle { // custom label style
-    let compact: Bool
-    func makeBody(configuration: Configuration) -> some View {
-        if compact { configuration.icon } else { HStack { configuration.icon; configuration.title } }
+// MARK: - Material Background Component
+struct MaterialBackground: View {
+    let material: CardMaterial
+    let tint: Color
+    
+    var body: some View {
+        Rectangle()
+            .fill(.ultraThinMaterial)
+            .background(
+                LinearGradient(
+                    colors: [tint.opacity(0.1), tint.opacity(0.05)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
     }
-}
-
-extension LabelStyle where Self == IconOnlyIfCompactLabelStyle {
-    static func iconOnlyIfCompact(_ compact: Bool) -> IconOnlyIfCompactLabelStyle { .init(compact: compact) }
 }
 
 #Preview {
-    GlassCardView(card: BusinessCard(fullName: "Jane Doe", company: "Acme Inc.", role: "iOS Engineer", website: URL(string: "https://acme.com"), instagram: "janedoe", linkedIn: "janedoe", phone: "555-1234", email: "jane@acme.com", accentColor: .purple))
-        .padding()
-        .background(LinearGradient(colors: [.black,.gray], startPoint: .top, endPoint: .bottom))
+    GlassCardView(card: BusinessCard(
+        fullName: "John Doe",
+        jobTitle: "Software Engineer",
+        company: "Tech Corp",
+        email: "john@techcorp.com",
+        phone: "+1 (555) 123-4567",
+        resumeURL: "https://johndoe.com/resume"
+    ))
+    .padding()
 }
