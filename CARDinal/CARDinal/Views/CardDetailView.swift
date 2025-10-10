@@ -79,7 +79,7 @@ struct CardDetailView: View {
                 .foregroundStyle(.blue)
             }
             
-            if !card.phone.isEmpty {
+            if let phone = card.phone, !phone.isEmpty {
                 Button(action: { callPhone() }) {
                     HStack {
                         Image(systemName: "phone.fill")
@@ -124,8 +124,8 @@ struct CardDetailView: View {
                     ContactRow(icon: "envelope", title: "Email", value: card.email)
                 }
                 
-                if !card.phone.isEmpty {
-                    ContactRow(icon: "phone", title: "Phone", value: card.phone)
+                if let phone = card.phone, !phone.isEmpty {
+                    ContactRow(icon: "phone", title: "Phone", value: phone)
                 }
                 
                 if card.website != nil {
@@ -156,7 +156,8 @@ struct CardDetailView: View {
     }
     
     private func callPhone() {
-        let cleanPhone = card.phone.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        guard let phone = card.phone else { return }
+        let cleanPhone = phone.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
         if let url = URL(string: "tel:\(cleanPhone)") {
             openURL(url)
         }

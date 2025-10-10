@@ -8,18 +8,18 @@
 import Foundation
 
 extension String {
-    var isEmpty: Bool {
+    var isBlank: Bool {
         return self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 
 extension Optional where Wrapped == String {
-    var isEmpty: Bool {
+    var isBlank: Bool {
         switch self {
         case .none:
             return true
         case .some(let string):
-            return string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return string.trimmingCharacters(in: .whitespacesAndNewlines).isBlank
         }
     }
     

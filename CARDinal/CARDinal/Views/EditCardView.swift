@@ -20,14 +20,14 @@ struct EditCardView: View {
         NavigationStack {
             Form {
                 Section("Identity") {
-                    TextField("Full Name", text: binding(\.fullName))
-                    TextField("Company", text: binding(\.company))
-                    TextField("Role / Title", text: binding(\.role))
+                    TextField("Full Name", text: stringBinding(\.fullName))
+                    TextField("Company", text: stringBinding(\.company))
+                    TextField("Role / Title", text: stringBinding(\.role))
                 }
                 Section("Contact") {
-                    TextField("Phone", text: binding(\.phone, default: ""))
+                    TextField("Phone", text: optionalStringBinding(\.phone))
                         .keyboardType(.phonePad)
-                    TextField("Email", text: binding(\.email, default: ""))
+                    TextField("Email", text: stringBinding(\.email))
                         .keyboardType(.emailAddress)
                     TextField("Website (https://...)", text: websiteBinding())
                         .keyboardType(.URL)
@@ -35,10 +35,10 @@ struct EditCardView: View {
                         .autocorrectionDisabled()
                 }
                 Section("Social") {
-                    TextField("Instagram (handle only)", text: binding(\.instagram, default: ""))
+                    TextField("Instagram (handle only)", text: stringBinding(\.instagram))
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                    TextField("LinkedIn (profile slug)", text: binding(\.linkedIn, default: ""))
+                    TextField("LinkedIn (profile slug)", text: stringBinding(\.linkedIn))
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 }
@@ -180,7 +180,11 @@ struct EditCardView: View {
         Binding(get: { draft[keyPath: keyPath] }, set: { draft[keyPath: keyPath] = $0 })
     }
 
-    private func binding(_ keyPath: WritableKeyPath<BusinessCard, String?>, default def: String) -> Binding<String> {
+    private func stringBinding(_ keyPath: WritableKeyPath<BusinessCard, String>) -> Binding<String> {
+        Binding<String>(get: { draft[keyPath: keyPath] }, set: { draft[keyPath: keyPath] = $0 })
+    }
+
+    private func optionalStringBinding(_ keyPath: WritableKeyPath<BusinessCard, String?>, default def: String = "") -> Binding<String> {
         Binding<String>(get: { draft[keyPath: keyPath] ?? def }, set: { draft[keyPath: keyPath] = $0.isEmpty ? nil : $0 })
     }
 

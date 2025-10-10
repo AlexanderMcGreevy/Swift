@@ -47,12 +47,12 @@ struct GlassCardView: View {
 
     private var infoRows: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if !card.phone.isEmpty {
+            if let phone = card.phone, !phone.isEmpty {
                 HStack {
                     Image(systemName: "phone.fill")
                         .foregroundStyle(card.accentColor)
                         .frame(width: 12)
-                    Text(card.phone)
+                    Text(phone)
                         .font(.caption)
                 }
             }

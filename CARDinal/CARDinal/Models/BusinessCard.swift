@@ -121,6 +121,19 @@ enum CardMaterial: String, CaseIterable, Codable {
     var displayName: String {
         return rawValue
     }
+    
+    var icon: String {
+        switch self {
+        case .standard:
+            return "rectangle"
+        case .premium:
+            return "rectangle.fill"
+        case .luxury:
+            return "sparkles.rectangle.stack"
+        case .eco:
+            return "leaf"
+        }
+    }
 }
 
 // MARK: - Color Extensions
